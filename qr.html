@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>扫码预览</title>
+<style>
+body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f5f5f5; }
+h2 { color: #333; margin-bottom: 8px; }
+p { color: #888; font-size: 14px; margin-bottom: 24px; }
+#qr { background: #fff; padding: 16px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+a { margin-top: 20px; color: #e91e63; font-size: 13px; word-break: break-all; text-align: center; padding: 0 20px; }
+</style>
+</head>
+<body>
+<h2>鲜花频道 H5 预览</h2>
+<p>用手机扫码查看</p>
+<div id="qr"></div>
+<a href="https://xusha0620-spec.github.io/flower-channel/" target="_blank">https://xusha0620-spec.github.io/flower-channel/</a>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+new QRCode(document.getElementById('qr'), {
+  text: 'https://xusha0620-spec.github.io/flower-channel/',
+  width: 200,
+  height: 200,
+  colorDark: '#111',
+  colorLight: '#fff',
+  correctLevel: QRCode.CorrectLevel.H
+});
+</script>
+</body>
+</html>
