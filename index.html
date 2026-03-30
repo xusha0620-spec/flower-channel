@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>鲜花频道</title>
+  <style>
+    @font-face {
+      font-family: 'MeituanType';
+      src: url('./MeituanType-Regular.ttf') format('truetype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'MeituanType';
+      src: url('./MeituanType-Bold.ttf') format('truetype');
+      font-weight: 700;
+    }
+    @font-face {
+      font-family: 'MTNewDigitalDisplay';
+      src: url('./MTNewDigitalDisplay-Bold.otf') format('opentype');
+      font-weight: 700;
+    }
+    @font-face {
+      font-family: 'MTNewDigitalDisplay';
+      src: url('./MTNewDigitalDisplay-Medium.otf') format('opentype');
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: 'MTNewDigitalDisplay';
+      src: url('./MTNewDigitalDisplay-Regular.otf') format('opentype');
+      font-weight: 400;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+
+    .phone-frame {
+      width: 375px;
+      height: 812px;
+      background: transparent;
+      position: relative;
+      border-radius: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .phone-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 0;
+      scrollbar-width: none;
+    }
+    .phone-scroll::-webkit-scrollbar { display: none; }
+
+    /* ===== 状态栏 ===== */
+    .status-bar {
+      height: 44px;
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      pointer-events: none;
+    }
+    .status-bar img {
+      width: 100%;
+      height: 44px;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+    }
+
+    /* ===== Banner 区域 ===== */
+.banner-area {
+width: 375px;
+height: 207px;
+background: #fde8f0;
+position: relative;
+overflow: hidden;
+z-index: 0;
+}
+    .banner-area .banner-img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    /* 右侧花束装饰背景 */
+    .banner-deco {
+      display: none;
+    }
+
+    /* 导航栏 */
+    .nav-bar {
+      position: absolute;
+      top: 44px;
+      left: 0; right: 0;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      z-index: 10;
+    }
+    .nav-back { margin-right: 2px; cursor: pointer; display: flex; align-items: center; }
+.nav-back img { width: 20px; height: 20px; object-fit: contain; }
+    .nav-brand { font-size: 17px; font-weight: 400; color: #333; font-family: 'MeituanType', sans-serif; }
+    .nav-location {
+      font-size: 12px; color: #555;
+      margin-left: 6px;
+      display: flex; align-items: center; gap: 2px;
+    }
+.nav-location .loc-icon { display: flex; align-items: center; }
+.nav-location .loc-icon img { width: 12px; height: 12px; object-fit: contain; }
+.nav-location .loc-arrow { display: flex; align-items: center; }
+.nav-location .loc-arrow img { width: 10px; height: 10px; object-fit: contain; }
+    .nav-more { margin-left: auto; font-size: 22px; color: #333; cursor: pointer; letter-spacing: 1px; }
+
+    /* 搜索框 */
+    .search-wrap {
+      position: absolute;
+      top: 90px;
+      left: 12px; right: 12px;
+      z-index: 10;
+    }
+    .search-box {
+      background: rgba(255,255,255,0.93);
+      border-radius: 22px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      padding: 0 6px 0 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .search-icon { margin-right: 6px; display: flex; align-items: center; }
+    .search-icon img { width: 14px; height: 14px; object-fit: contain; }
+    .search-placeholder { font-size: 13px; color: #c0c0c0; flex: 1; }
+    .search-btn {
+      background: linear-gradient(135deg, #FFE74D, #FFDD00);
+      color: #333;
+      font-size: 13px;
+      font-weight: 600;
+      width: 52px;
+      height: 28px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin: auto 3px auto 0;
+    }
+
+    /* Banner 文案 */
+    .banner-text {
+      position: absolute;
+      bottom: 24px;
+      left: 16px;
+      z-index: 5;
+    }
+    .banner-text .t1 {
+      font-size: 26px;
+      font-weight: 900;
+      color: #ad1457;
+      line-height: 1.35;
+      letter-spacing: 1px;
+    }
+    .banner-text .t2 {
+      font-size: 26px;
+      font-weight: 900;
+      color: #ad1457;
+      line-height: 1.35;
+      letter-spacing: 1px;
+    }
+
+    /* ===== 品类横滑导航 ===== */
+.category-nav {
+background: #ffffff;
+border-radius: 14px 14px 0 0;
+padding: 10px 0 12px;
+overflow-x: auto;
+white-space: nowrap;
+scrollbar-width: none;
+position: relative;
+z-index: 1;
+margin-top: -10px;
+}
+    .category-nav::-webkit-scrollbar { display: none; }
+    .cat-list { display: inline-flex; padding: 0 6px; }
+    .cat-item {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      width: 60px;
+      cursor: pointer;
+      gap: 4px;
+      position: relative;
+    }
+    .cat-icon-wrap {
+      width: 46px; height: 46px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: all 0.2s;
+      overflow: hidden;
+    }
+    .cat-icon-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 0;
+    }
+    .cat-item.active .cat-icon-wrap {
+      box-shadow: none;
+    }
+.cat-label { font-size: 12px; color: #555; text-align: center; font-weight: 400; }
+.cat-item.active .cat-label { color: #111111; font-weight: 500; position: relative; z-index: 1; }
+.cat-item.active .cat-label::after {
+content: '';
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 60px;
+height: 20px;
+border-radius: 10px;
+background: #FFE000;
+z-index: -1;
+}
+
+    /* ===== 瓷片区（横划） ===== */
+.tile-scroll {
+background: linear-gradient(to bottom, #ffffff, #f7f7f7);
+padding: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+    }
+    .tile-scroll::-webkit-scrollbar { display: none; }
+    .tile-list {
+      display: flex;
+      gap: 8px;
+      padding: 0 8px;
+      width: max-content;
+    }
+    .tile-card {
+      height: 160px;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .tile-card:nth-child(1) { width: 172px; }
+    .tile-card:nth-child(2) { width: 109px; }
+    .tile-card:nth-child(3) { width: 109px; }
+    .tile-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ===== 快筛标签 ===== */
+.quick-tags {
+background: #f7f7f7;
+padding: 0;
+overflow-x: auto;
+white-space: nowrap;
+scrollbar-width: none;
+}
+    .quick-tags::-webkit-scrollbar { display: none; }
+    .tag-list { display: inline-flex; gap: 8px; padding: 0 8px; align-items: center; }
+    
+    /* 子导航 tab（上图下文竖排） */
+    .q-tag {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: -4px;
+      width: 56px;
+      padding: 6px 0;
+      border-radius: 18px;
+      font-size: 12px;
+      cursor: pointer;
+      background: transparent;
+      color: #333;
+      border: 1.5px solid transparent;
+      white-space: nowrap;
+      transition: all 0.15s;
+      font-weight: 400;
+      position: relative;
+    }
+.q-tag.active {
+background: transparent;
+color: #111111;
+      border-color: transparent;
+      font-weight: 500;
+    }
+    .tag-slider {
+      position: absolute;
+      bottom: 0;
+      width: 56px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(to bottom, #F2E5FF, #FFDDFC);
+      z-index: 0;
+      transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    .q-tag.active .tab-img,
+    .q-tag.active span:not(.new-badge) {
+      position: relative;
+      z-index: 1;
+    }
+    .q-tag .tab-img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .q-tag .new-badge {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      background: #e91e63;
+      color: #fff;
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+
+    .q-tag-recommend img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+/* ===== 筛选条 ===== */
+.filter-bar {
+background: #f7f7f7;
+height: 44px;
+display: flex;
+align-items: center;
+padding: 0 8px;
+gap: 6px;
+border-bottom: none;
+}
+.f-item {
+flex: 0 0 auto;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+height: 28px;
+background: #ffffff;
+border: none;
+border-radius: 8px;
+font-size: 12px;
+color: #555;
+gap: 2px;
+padding: 0 14px;
+white-space: nowrap;
+}
+.f-item.active { color: #333; }
+.f-divider {
+display: none;
+}
+.f-icon {
+flex: 0 0 30px;
+width: 30px;
+height: 30px;
+display: flex;
+align-items: center;
+justify-content: center;
+background: #ffffff;
+border-radius: 8px;
+border: none;
+padding: 0;
+margin-left: auto;
+}
+.f-arrow { width: 10px; height: 10px; display: inline-block; vertical-align: middle; }
+
+    /* ===== 商品瀑布流 ===== */
+    .product-grid {
+      padding: 0 8px 16px;
+      columns: 2;
+      column-gap: 8px;
+background: #f7f7f7;
+}
+.prod-card {
+background: #ffffff;
+border-radius: 12px;
+overflow: hidden;
+cursor: pointer;
+transition: transform 0.15s;
+display: flex;
+flex-direction: column;
+break-inside: avoid;
+margin-bottom: 8px;
+}
+    .prod-card:active { transform: scale(0.98); }
+
+.prod-img {
+width: 100%;
+position: relative;
+overflow: hidden;
+border-radius: 12px 12px 0 0;
+flex-shrink: 0;
+}
+.prod-img::before {
+content: '';
+display: block;
+padding-top: 100%;
+}
+.prod-img > img:first-child {
+position: absolute;
+top: 0; left: 0;
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+.prod-emoji-bg {
+width: 100%;
+height: 100%;
+display: none;
+align-items: center;
+justify-content: center;
+      font-size: 68px;
+    }
+
+    .shop-overlay {
+position: relative;
+margin: -10px 0 0 6px;
+height: 20px;
+align-self: flex-start;
+background: #ffffff;
+border: 1px solid rgba(0,0,0,0.06);
+border-radius: 4px;
+padding: 0 6px 0 2px;
+display: inline-flex;
+align-items: center;
+gap: 4px;
+z-index: 2;
+}
+.shop-logo {
+width: 16px; height: 16px;
+border-radius: 3px;
+background: #ffcc00;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 7px;
+font-weight: 800;
+color: #333;
+flex-shrink: 0;
+overflow: hidden;
+}
+.shop-logo img { width: 100%; height: 100%; object-fit: cover; }
+.shop-name-text {
+font-size: 10px;
+color: #111;
+font-weight: 500;
+white-space: nowrap;
+}
+.shop-divider {
+color: #ddd;
+font-size: 9px;
+flex-shrink: 0;
+margin: 0 1px;
+}
+.delivery-badge {
+font-size: 10px;
+color: #999;
+white-space: nowrap;
+flex-shrink: 0;
+}
+
+    .prod-info { padding: 6px 8px 10px; }
+
+.prod-title {
+font-size: 13px;
+font-weight: 400;
+color: #111;
+line-height: 1.5;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+overflow: hidden;
+margin-bottom: 6px;
+}
+.price-line {
+display: flex;
+align-items: center;
+gap: 4px;
+}
+.price-now {
+font-size: 18px;
+font-weight: 700;
+color: #ff2e2e;
+font-family: 'MTNewDigitalDisplay', -apple-system, sans-serif;
+}
+.price-now .yen { font-size: 12px; font-weight: 400; font-family: 'MTNewDigitalDisplay', -apple-system, sans-serif; }
+.price-tag {
+display: inline-block;
+height: 14px;
+vertical-align: middle;
+}
+.price-ori {
+font-size: 11px;
+color: #c0c0c0;
+text-decoration: line-through;
+}
+.sold-num {
+font-size: 10px;
+color: #999;
+margin-left: auto;
+}
+
+    /* ===== 底部 Tab 栏 ===== */
+    .tab-bar-wrap {
+      position: sticky;
+      bottom: 0;
+      z-index: 100;
+      flex-shrink: 0;
+      width: 375px;
+    }
+    .tab-bar {
+      width: 375px;
+      height: 57px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .tab-bar-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      display: block;
+      pointer-events: none;
+    }
+    .tab-bar-items {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+    }
+    .t-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      padding-top: 6px;
+      padding-bottom: 0;
+    }
+    .t-item-n1 {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      padding-top: 6px;
+      padding-bottom: 0;
+    }
+    .t-icon-img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      display: block;
+    }
+    .t-icon-img-n1 {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      display: block;
+    }
+    .t-label {
+      font-size: 10px;
+      color: #555555;
+      line-height: 1;
+    }
+    .t-item.active .t-label { color: #e91e63; }
+
+    .t-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      cursor: pointer;
+      margin-top: -10px;
+    }
+    .t-center-img {
+      width: 55px;
+      height: 55px;
+      object-fit: contain;
+      display: block;
+    }
+    .t-center .t-label { font-size: 10px; color: #555555; margin-top: 2px; }
+
+.home-indicator {
+width: 375px;
+flex-shrink: 0;
+background: transparent;
+line-height: 0;
+}
+    .home-indicator img {
+      width: 375px;
+      display: block;
+    }
+
+    /* 优惠标签 */
+    .promo-tag {
+      background: linear-gradient(90deg, #ff4757, #ff6348);
+      color: #fff;
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+<div class="phone-frame">
+<div class="phone-scroll">
+
+  <!-- Banner 区域 -->
+  <div class="banner-area">
+    <img class="banner-img" src="https://p0.meituan.net/ingee/ead805b08edf4ed67da22fb3112e311c383194.png" alt="banner" />
+
+    <!-- 状态栏 -->
+    <div class="status-bar">
+      <img src="https://p0.meituan.net/ingee/d774cef08d582d866cb993c55fe6cde71490.png" alt="status bar" />
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+      <span class="nav-back"><img src="https://p0.meituan.net/ingee/05aa20cd3d7749459adadea24ce0fa99553.png" /></span>
+      <span class="nav-brand">闪购</span>
+      <div class="nav-location">
+        <span class="loc-icon"><img src="https://p0.meituan.net/ingee/d12a6d68bc8f660f13a739201067e161862.png" /></span>
+        <span>融新科技中心</span>
+        <span class="loc-arrow"><img src="https://p0.meituan.net/ingee/99209baa4edfc1cb7cfaf7e3a24b4752299.png" /></span>
+      </div>
+      <span class="nav-more">···</span>
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="search-wrap">
+      <div class="search-box">
+        <span class="search-icon"><img src="https://p0.meituan.net/ingee/67e7a86293cd9072861e105b889c847e708.png" /></span>
+        <span class="search-placeholder">弗洛伊德玫瑰</span>
+        <div class="search-btn">搜索</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 品类横滑导航（金刚区）-->
+  <div class="category-nav">
+    <div class="cat-list">
+      <div class="cat-item">
+        <div class="cat-icon-wrap"><img src="https://p0.meituan.net/ingee/340a6181fba7de9441b582410fab29ea8965.png" alt="附近商家" /></div>
+        <span class="cat-label">附近商家</span>
+      </div>
+      <div class="cat-item">
+        <div class="cat-icon-wrap"><img src="https://p0.meituan.net/ingee/d4e69150bed76336f6378237de4200019015.png" alt="超市便利" /></div>
+        <span class="cat-label">超市便利</span>
+      </div>
+      <div class="cat-item">
+        <div class="cat-icon-wrap"><img src="https://p0.meituan.net/ingee/1045361081faf50f6948ba1cb6b0e5f113168.png" alt="蔬菜水果" /></div>
+        <span class="cat-label">蔬菜水果</span>
+      </div>
+      <div class="cat-item">
+        <div class="cat-icon-wrap"><img src="https://p0.meituan.net/ingee/9fc5e94432cf3ea7586472a3d324484410470.png" alt="名酒精酿" /></div>
+        <span class="cat-label">名酒精酿</span>
+      </div>
+      <div class="cat-item">
+        <div class="cat-icon-wrap"><img src="https://p0.meituan.net/ingee/d548006815723ecd36c85cda24d894b89300.png" alt="手机家电" /></div>
+        <span class="cat-label">手机家电</span>
+      </div>
+      <div class="cat-item">
+        <div class="cat-icon-wrap"><img src="https://p0.meituan.net/ingee/68c49e2be77f8c3941a8fbc5c12b7fb49214.png" alt="美妆个护" /></div>
+        <span class="cat-label">美妆个护</span>
+      </div>
+      <div class="cat-item active">
+        <div class="cat-icon-wrap"><img src="https://p0.meituan.net/ingee/dc052c5542f6bb8fecda4d24d63eba5212729.png" alt="浪漫鲜花" /></div>
+        <span class="cat-label">浪漫鲜花</span>
+      </div>
+      <div class="cat-item">
+        <div class="cat-icon-wrap"><img src="https://p0.meituan.net/ingee/35fb65facfe1dd7fa6cd3c93905b4fb513207.png" alt="潮玩运动" /></div>
+        <span class="cat-label">潮玩运动</span>
+      </div>
+      <div class="cat-item">
+        <div class="cat-icon-wrap"><img src="https://p0.meituan.net/ingee/8a94abb3cf52fb88221d2d746a814a3710441.png" alt="母婴用品" /></div>
+        <span class="cat-label">母婴用品</span>
+      </div>
+      <div class="cat-item">
+        <div class="cat-icon-wrap"><img src="https://p0.meituan.net/ingee/502412b3a256eb94156032aad7d0131611386.png" alt="宠物用品" /></div>
+        <span class="cat-label">宠物用品</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 瓷片区（横划） -->
+  <div class="tile-scroll">
+    <div class="tile-list">
+      <div class="tile-card">
+        <img src="https://p0.meituan.net/ingee/a285249be59204b576ccd69e2b174f62113495.png" alt="有花漾" />
+      </div>
+      <div class="tile-card">
+        <img src="https://p0.meituan.net/ingee/fb37324c9ad5dfade2ef2d7c2e706dd281514.png" alt="家居鲜花" />
+      </div>
+      <div class="tile-card">
+        <img src="https://p0.meituan.net/ingee/88ee3b77f6839661f4bd9404ef8957b274983.png" alt="生活绿植" />
+      </div>
+    </div>
+  </div>
+
+  <!-- 快筛标签 -->
+  <div class="quick-tags">
+    <div class="tag-list">
+      <div class="q-tag active">
+        <img class="tab-img" src="https://p0.meituan.net/ingee/69fb60f3ff622fb10cb64c99e3177b718604.png" alt="推荐" />
+        <span>推荐</span>
+      </div>
+      <div class="q-tag">
+        <img class="tab-img" src="https://p0.meituan.net/ingee/8b2e2e968533eb324af5c7d07bf7bca315064.png" alt="混搭花束" />
+        混搭花束
+      </div>
+      <div class="q-tag">
+        <img class="tab-img" src="https://p0.meituan.net/ingee/7f997abfe2231685cbce6e634ac3633515558.png" alt="新中式" />
+        新中式
+      </div>
+      <div class="q-tag">
+        <img class="tab-img" src="https://p0.meituan.net/ingee/bf3e677b08599e1c7bd134e7b0307d6f7698.png" alt="趋势新品" />
+        趋势新品
+      </div>
+      <div class="q-tag">
+        <img class="tab-img" src="https://p0.meituan.net/ingee/67c9654b9676ceeadef1091a880d982814742.png" alt="生活鲜花" />
+        生活鲜花
+      </div>
+      <div class="q-tag">
+        <img class="tab-img" src="https://p0.meituan.net/ingee/05b061b45ab1e5ebfaed718a2e2e4ada13941.png" alt="玫瑰" />
+        玫瑰
+      </div>
+      <div class="q-tag">
+        <img class="tab-img" src="https://p0.meituan.net/ingee/410d99233f4ee46dffdbc4ebcc63f38f17961.png" alt="大型花束" />
+        大型花束
+      </div>
+      <div class="q-tag">
+        <img class="tab-img" src="https://p0.meituan.net/ingee/9c4e8b83ad6ff264737c5b4cdb2fe94b19519.png" alt="抱抱桶" />
+        抱抱桶
+      </div>
+    </div>
+  </div>
+
+<!-- 筛选条 -->
+<div class="filter-bar">
+<div class="f-item active">综合排序 <img class="f-arrow" src="https://p0.meituan.net/ingee/05bfed8be96e026513a0c463374c4eca486.png" /></div>
+<div class="f-item">价格区间 <img class="f-arrow" src="https://p0.meituan.net/ingee/05bfed8be96e026513a0c463374c4eca486.png" /></div>
+<div class="f-item">颜色 <img class="f-arrow" src="https://p0.meituan.net/ingee/05bfed8be96e026513a0c463374c4eca486.png" /></div>
+<div class="f-divider"></div>
+<div class="f-item">款式 <img class="f-arrow" src="https://p0.meituan.net/ingee/05bfed8be96e026513a0c463374c4eca486.png" /></div>
+<div class="f-icon">
+<img src="https://p0.meituan.net/ingee/d1ff04e55716dc76e408b207d1c9dcc31030.png" width="16" height="16" />
+</div>
+</div>
+
+  <!-- 商品瀑布流 -->
+  <div class="product-grid">
+
+    <div class="prod-card">
+      <div class="prod-img" style="background:#f5e6e8;">
+        <img src="https://p0.meituan.net/ingee/5af8ff6e40be3a7b4cd08b6d1d9d80fc248305.png" style="width:100%;height:100%;object-fit:cover;" />
+      </div>
+      <div class="shop-overlay">
+        <div class="shop-logo">闪</div>
+        <span class="shop-name-text">只和花店</span>
+        <span class="shop-divider">|</span>
+        <span class="delivery-badge">90分钟</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-title">粉色系混搭花束 19枝玫瑰向日葵</div>
+        <div class="price-line">
+          <div class="price-now"><span class="yen">¥</span>68</div>
+<img class="price-tag" src="https://p0.meituan.net/ingee/8feca0bbdd3c664c3ff3a065fd2e78c31789.png" />
+            <span class="sold-num">已售200+</span>
+          </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img" style="background:#e8f0f8;">
+        <img src="https://p0.meituan.net/ingee/a42feddbbcc4170c700e06538ac95879256372.png" style="width:100%;height:100%;object-fit:cover;" />
+      </div>
+      <div class="shop-overlay">
+        <div class="shop-logo">遇</div>
+        <span class="shop-name-text">遇见花店</span>
+        <span class="shop-divider">|</span>
+        <span class="delivery-badge">2.5小时</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-title">蓝色系花束 绣球搭配满天星</div>
+        <div class="price-line">
+          <div class="price-now"><span class="yen">¥</span>88</div>
+<img class="price-tag" src="https://p0.meituan.net/ingee/8feca0bbdd3c664c3ff3a065fd2e78c31789.png" />
+            <span class="sold-num">已售200+</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img" style="background:#fce8e8;">
+        <img src="https://p0.meituan.net/ingee/3ab4e9c70682cb46c18c772223ad1750233343.png" style="width:100%;height:100%;object-fit:cover;" />
+      </div>
+      <div class="shop-overlay">
+        <div class="shop-logo">花</div>
+        <span class="shop-name-text">花语鲜花</span>
+        <span class="shop-divider">|</span>
+        <span class="delivery-badge">60分钟</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-title">郁金香花束 11枝荷兰进口</div>
+        <div class="price-line">
+          <div class="price-now"><span class="yen">¥</span>56</div>
+<img class="price-tag" src="https://p0.meituan.net/ingee/8feca0bbdd3c664c3ff3a065fd2e78c31789.png" />
+            <span class="sold-num">已售300+</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img" style="background:#e8eef8;">
+        <img src="https://p0.meituan.net/ingee/f024825421e276aca943ba630df31f28228278.png" style="width:100%;height:100%;object-fit:cover;" />
+      </div>
+      <div class="shop-overlay">
+        <div class="shop-logo">玫</div>
+        <span class="shop-name-text">玫瑰物语</span>
+        <span class="shop-divider">|</span>
+        <span class="delivery-badge">45分钟</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-title">红玫瑰花束 33枝求婚表白专属</div>
+        <div class="price-line">
+          <div class="price-now"><span class="yen">¥</span>128</div>
+<img class="price-tag" src="https://p0.meituan.net/ingee/8feca0bbdd3c664c3ff3a065fd2e78c31789.png" />
+            <span class="sold-num">已售500+</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img" style="background:#f0e8f5;">
+        <img src="https://p0.meituan.net/ingee/5af8ff6e40be3a7b4cd08b6d1d9d80fc248305.png" style="width:100%;height:100%;object-fit:cover;" />
+      </div>
+      <div class="shop-overlay">
+        <div class="shop-logo">紫</div>
+        <span class="shop-name-text">紫色梦境</span>
+        <span class="shop-divider">|</span>
+        <span class="delivery-badge">90分钟</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-title">紫色系花束 薰衣草搭配紫玫瑰</div>
+        <div class="price-line">
+          <div class="price-now"><span class="yen">¥</span>76</div>
+<img class="price-tag" src="https://p0.meituan.net/ingee/8feca0bbdd3c664c3ff3a065fd2e78c31789.png" />
+            <span class="sold-num">已售100+</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-card">
+      <div class="prod-img" style="background:#f5e6e8;">
+        <img src="https://p0.meituan.net/ingee/a42feddbbcc4170c700e06538ac95879256372.png" style="width:100%;height:100%;object-fit:cover;" />
+      </div>
+      <div class="shop-overlay">
+        <div class="shop-logo">阳</div>
+        <span class="shop-name-text">阳光花坊</span>
+        <span class="shop-divider">|</span>
+        <span class="delivery-badge">30分钟</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-title">向日葵花束 9枝阳光系礼盒装</div>
+        <div class="price-line">
+          <div class="price-now"><span class="yen">¥</span>45</div>
+<img class="price-tag" src="https://p0.meituan.net/ingee/8feca0bbdd3c664c3ff3a065fd2e78c31789.png" />
+            <span class="sold-num">已售1000+</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- end phone-scroll -->
+
+  <!-- 底部 Tab 栏 -->
+  <div class="tab-bar-wrap">
+    <div class="tab-bar">
+      <img class="tab-bar-bg" src="https://p0.meituan.net/ingee/c9ac2933b64fe42484ad397b629574191439.png" alt="" />
+      <div class="tab-bar-items">
+        <div class="t-item-n1">
+          <img class="t-icon-img-n1" src="https://p0.meituan.net/ingee/b00a22ccc5916e82c24c7999f09b8e8f2823.png" alt="" />
+        </div>
+        <div class="t-item">
+          <img class="t-icon-img" src="https://p0.meituan.net/ingee/5ddf1d99f3e6e86619e890f5b60af3fa3921.png" alt="" />
+          <span class="t-label">满90减50</span>
+        </div>
+        <div class="t-center">
+          <img class="t-center-img" src="https://p0.meituan.net/ingee/210cc9ebe34507d22fe78cd92ade01a312574.png" alt="" />
+        </div>
+        <div class="t-item">
+          <img class="t-icon-img" src="https://p0.meituan.net/ingee/ae615644b28140f52cc0eb01c80a78311602.png" alt="" />
+          <span class="t-label">情人节</span>
+        </div>
+        <div class="t-item">
+          <img class="t-icon-img" src="https://p0.meituan.net/ingee/f36dd6c93eccecae54ef5e1522f263f7937.png" alt="" />
+          <span class="t-label">订单</span>
+        </div>
+      </div>
+    </div>
+    <!-- Home 条 -->
+    <div class="home-indicator">
+      <img src="https://p0.meituan.net/ingee/0182cfc4606f65a3bfad54717dd50879601.png" alt="" />
+    </div>
+  </div>
+
+</div>
+
+</div>
+<script>
+(function() {
+  var tagList = document.querySelector('.tag-list');
+  if (!tagList) return;
+  var tags = tagList.querySelectorAll('.q-tag');
+
+  // 创建滑动色块
+  var slider = document.createElement('div');
+  slider.className = 'tag-slider';
+  tagList.style.position = 'relative';
+  tagList.insertBefore(slider, tagList.firstChild);
+
+  function moveSlider(el) {
+    var listRect = tagList.getBoundingClientRect();
+    var elRect = el.getBoundingClientRect();
+    var left = elRect.left - listRect.left + (elRect.width - 56) / 2;
+    slider.style.left = left + 'px';
+  }
+
+  // 初始定位到 active，不带动画
+  var initActive = tagList.querySelector('.q-tag.active');
+  if (initActive) {
+    slider.style.transition = 'none';
+    requestAnimationFrame(function() {
+      moveSlider(initActive);
+      requestAnimationFrame(function() {
+        slider.style.transition = '';
+      });
+    });
+  }
+
+  tags.forEach(function(tag) {
+    tag.addEventListener('click', function() {
+      tags.forEach(function(t) {
+        t.classList.remove('active');
+      });
+      tag.classList.add('active');
+      moveSlider(tag);
+    });
+  });
+})();
+</script>
+</body>
+</html>
