@@ -66,10 +66,20 @@
       height: 44px;
       position: absolute;
       top: 0; left: 0; right: 0;
-      z-index: 20;
+      z-index: 30;
       pointer-events: none;
+      overflow: hidden;
+    }
+    .status-bar-bg {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      opacity: 0;
+      transition: opacity 0.15s ease;
     }
     .status-bar img {
+      position: relative;
+      z-index: 1;
       width: 100%;
       height: 44px;
       object-fit: cover;
@@ -108,7 +118,27 @@ z-index: 0;
       display: flex;
       align-items: center;
       padding: 0 14px;
-      z-index: 10;
+      z-index: 25;
+      overflow: hidden;
+      background: transparent;
+      transition: opacity 0.15s ease;
+    }
+    .nav-bar-bg {
+      position: absolute;
+      top: -44px;
+      left: 0; right: 0;
+      bottom: 0;
+      background: #fff;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      pointer-events: none;
+    }
+    .nav-bar > * {
+      position: relative;
+      z-index: 1;
+    }
+    .nav-fade {
+      transition: opacity 0.15s ease;
     }
     .nav-back { margin-right: 2px; cursor: pointer; display: flex; align-items: center; }
 .nav-back img { width: 20px; height: 20px; object-fit: contain; }
@@ -638,28 +668,33 @@ line-height: 0;
 </head>
 <body>
 <div class="phone-frame">
+
+  <!-- 状态栏（固定，不随滚动） -->
+  <div class="status-bar" id="statusBar">
+    <div class="status-bar-bg" id="statusBarBg"></div>
+    <img src="https://p0.meituan.net/ingee/d774cef08d582d866cb993c55fe6cde71490.png" alt="status bar" />
+  </div>
+
+  <!-- 导航栏（固定，不随滚动） -->
+  <div class="nav-bar" id="navBar">
+    <div class="nav-bar-bg" id="navBarBg"></div>
+    <span class="nav-back"><img src="https://p0.meituan.net/ingee/05aa20cd3d7749459adadea24ce0fa99553.png" /></span>
+    <span class="nav-brand nav-fade" id="navBrand">闪购</span>
+    <div class="nav-location nav-fade" id="navLocation">
+      <span class="loc-icon"><img src="https://p0.meituan.net/ingee/d12a6d68bc8f660f13a739201067e161862.png" /></span>
+      <span>融新科技中心</span>
+      <span class="loc-arrow"><img src="https://p0.meituan.net/ingee/99209baa4edfc1cb7cfaf7e3a24b4752299.png" /></span>
+    </div>
+    <span class="nav-more nav-fade" id="navMore">···</span>
+  </div>
+
 <div class="phone-scroll">
 
   <!-- Banner 区域 -->
   <div class="banner-area">
     <img class="banner-img" src="https://p0.meituan.net/ingee/ead805b08edf4ed67da22fb3112e311c383194.png" alt="banner" />
 
-    <!-- 状态栏 -->
-    <div class="status-bar">
-      <img src="https://p0.meituan.net/ingee/d774cef08d582d866cb993c55fe6cde71490.png" alt="status bar" />
-    </div>
-
     <!-- 导航栏 -->
-    <div class="nav-bar">
-      <span class="nav-back"><img src="https://p0.meituan.net/ingee/05aa20cd3d7749459adadea24ce0fa99553.png" /></span>
-      <span class="nav-brand">闪购</span>
-      <div class="nav-location">
-        <span class="loc-icon"><img src="https://p0.meituan.net/ingee/d12a6d68bc8f660f13a739201067e161862.png" /></span>
-        <span>融新科技中心</span>
-        <span class="loc-arrow"><img src="https://p0.meituan.net/ingee/99209baa4edfc1cb7cfaf7e3a24b4752299.png" /></span>
-      </div>
-      <span class="nav-more">···</span>
-    </div>
 
     <!-- 搜索框 -->
     <div class="search-wrap">
@@ -945,6 +980,26 @@ line-height: 0;
 
 </div>
 <script>
+// ===== status bar + 导航栏 上滑渐变 =====
+(function() {
+  var scroll = document.querySelector('.phone-scroll');
+  var statusBg = document.getElementById('statusBarBg');
+  var fadeEls = [
+    document.getElementById('navBrand'),
+    document.getElementById('navLocation'),
+    document.getElementById('navMore')
+  ];
+  if (!scroll) return;
+
+  scroll.addEventListener('scroll', function() {
+    var t = Math.min(1, scroll.scrollTop / 40);
+    if (statusBg) statusBg.style.opacity = t;
+    fadeEls.forEach(function(el) {
+      if (el) el.style.opacity = 1 - t;
+    });
+  });
+})();
+
 (function() {
   var tagList = document.querySelector('.tag-list');
   if (!tagList) return;
